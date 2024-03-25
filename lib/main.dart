@@ -1,9 +1,9 @@
+import 'package:api_flutter_laravel/tab_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:api_flutter_laravel/providers/user_provider.dart';
 import 'package:api_flutter_laravel/screens/login_screen.dart';
 import 'package:api_flutter_laravel/screens/register_screen.dart';
-import 'package:api_flutter_laravel/screens/home_screen.dart'; // Importa la pantalla HomeScreen
 
 void main() {
   runApp(MyApp());
@@ -19,11 +19,11 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: '/HomeScreen', // Cambia la ruta inicial a '/HomeScreen'
+        initialRoute: '/', // Cambia la ruta inicial a '/'
         routes: {
           '/': (context) => LoginScreen(),
           '/register': (context) => RegisterScreen(),
-          '/HomeScreen': (context) => HomeScreen(), // Agrega la ruta para HomeScreen
+          '/TabNavigator': (context) => TabNavigator(), // Agrega la ruta para el TabNavigator
         },
       ),
     );

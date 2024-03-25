@@ -1,3 +1,4 @@
+import 'package:api_flutter_laravel/tab_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:api_flutter_laravel/api/api_service.dart';
 
@@ -14,7 +15,10 @@ class LoginScreen extends StatelessWidget {
       bool loggedIn = await ApiService.login(email, password);
       
       if (loggedIn) {
-        Navigator.pushNamed(context, '/HomeScreen'); // Cambia la ruta a '/HomeScreen'
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => TabNavigator()), // Navega al TabNavigator
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed. Please try again.')),
