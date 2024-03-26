@@ -5,28 +5,32 @@ import 'package:api_flutter_laravel/screens/admin_users_screen.dart';
 import 'package:api_flutter_laravel/screens/admin_posts_screen.dart';
 
 class TabNavigator extends StatelessWidget {
+  final String token;
+
+  TabNavigator({required this.token});
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4, // Número total de pestañas
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Tab Navigator'),
           bottom: TabBar(
             tabs: [
-              Tab(text: 'Perfil'), // Pestaña para el perfil del usuario
-              Tab(text: 'Posts'), // Pestaña para los posts del usuario
-              Tab(text: 'Usuarios (Admin)'), // Pestaña para la lista de usuarios (solo para administradores)
-              Tab(text: 'Posts (Admin)'), // Pestaña para la lista de posts (solo para administradores)
+              Tab(text: 'Perfil'),
+              Tab(text: 'Posts'),
+              Tab(text: 'Usuarios (Admin)'),
+              Tab(text: 'Posts (Admin)'),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            UserProfileScreen(), // Contenido de la pestaña de perfil del usuario
-            UserPostsScreen(), // Contenido de la pestaña de posts del usuario
-            AdminUsersScreen(), // Contenido de la pestaña de lista de usuarios (solo para administradores)
-            AdminPostsScreen(), // Contenido de la pestaña de lista de posts (solo para administradores)
+            UserProfileScreen(token: token),
+            UserPostsScreen(),
+            AdminUsersScreen(),
+            AdminPostsScreen(),
           ],
         ),
       ),

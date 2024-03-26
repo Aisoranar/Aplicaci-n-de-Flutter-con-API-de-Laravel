@@ -1,11 +1,9 @@
-// D:\Documents\FlutterApp\api_flutter_laravel\lib\models\user.dart
-
 class User {
   final int id;
-  final String firstName;
-  final String lastName;
-  final String username;
-  final String email;
+  String firstName; // Quitamos la palabra clave final
+  String lastName; // Quitamos la palabra clave final
+  String username;
+  String email; // Quitamos la palabra clave final
   final String password;
   final String birthdate;
 
@@ -21,13 +19,13 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
-      username: json['username'],
-      email: json['email'],
-      password: json['password'],
-      birthdate: json['birthdate'],
+      id: json['id'] ?? 0,
+      firstName: json['first_name'] ?? '',
+      lastName: json['last_name'] ?? '',
+      username: json['username'] ?? '',
+      email: json['email'] ?? '',
+      password: json['password'] ?? '',
+      birthdate: json['birthdate'] ?? '',
     );
   }
 

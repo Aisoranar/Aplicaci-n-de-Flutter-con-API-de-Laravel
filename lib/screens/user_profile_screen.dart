@@ -3,12 +3,16 @@ import 'package:api_flutter_laravel/models/user.dart';
 import 'package:api_flutter_laravel/api/api_service.dart';
 
 class UserProfileScreen extends StatefulWidget {
+  final String token;
+
+  UserProfileScreen({required this.token});
+
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
-  late Future<User> _userFuture;
+  late Future<User?> _userFuture;
 
   @override
   void initState() {
@@ -16,29 +20,30 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     _userFuture = _loadUserProfile();
   }
 
-  Future<User> _loadUserProfile() async {
-    try {
-      return ApiService.getUserProfile();
-    } catch (error) {
-      print('Error loading user profile: $error');
-      throw error;
-    }
+  Future<User?> _loadUserProfile() async {
+  try {
+    User? user = await ApiService.getUserProfile(widget.token);
+    return user;
+  } catch (error) {
+    print('Error loading user profile: $error');
+    return null; // Devuelve null en caso de error
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, 
-        title: Text('Perfil de Usuario'), 
+        title: Text('Perfil de Usuario'),
       ),
-      body: FutureBuilder<User>(
+      body: FutureBuilder<User?>(
         future: _userFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasError || snapshot.data == null) {
+            return Center(child: Text('Error: User data not found'));
           } else {
             User user = snapshot.data!;
             return Center(

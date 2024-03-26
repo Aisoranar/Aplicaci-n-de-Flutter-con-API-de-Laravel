@@ -30,14 +30,24 @@ class ApiService {
     }
   }
 
+  static Future<bool> editUser(int userId, String firstName, String lastName, String email) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/admin/users/$userId'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'first_name': firstName,
+        'last_name': lastName,
+        'email': email,
+      }),
+    );
+
+    return response.statusCode == 200;
+  }
+
   static Future<bool> deleteUser(int userId) async {
     final response = await http.delete(Uri.parse('$baseUrl/admin/users/$userId'));
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
+    return response.statusCode == 200;
   }
 
   static Future<List<Post>> getPosts() async {
@@ -65,33 +75,52 @@ class ApiService {
   static Future<bool> deletePost(int postId) async {
     final response = await http.delete(Uri.parse('$baseUrl/admin/posts/$postId'));
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
-    }
+    return response.statusCode == 200;
+  }
+
+  static Future<bool> addPost(String content) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/admin/posts'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'content': content}),
+    );
+
+    return response.statusCode == 201;
   }
 
   // Métodos para el controlador de usuario de la API
 
-  static Future<User> getUserProfile() async {
-    final response = await http.get(Uri.parse('$baseUrl/user/profile'));
+  static Future<User?> getUserProfile(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/user/profile'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
     if (response.statusCode == 200) {
       Map<String, dynamic> userData = json.decode(response.body);
-      return User.fromJson(userData['user']);
+      if (userData.containsKey('user') && userData['user'] != null) {
+        return User.fromJson(userData['user']);
+      } else {
+        print('User data not found in response');
+        return null;
+      }
     } else {
       throw Exception('Failed to load user profile');
     }
   }
 
   static Future<List<Post>> getUserPosts() async {
-    final response = await http.get(Uri.parse('$baseUrl/user/posts'));
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/user/posts'));
 
-    if (response.statusCode == 200) {
-      Iterable data = json.decode(response.body)['posts'];
-      return List<Post>.from(data.map((post) => Post.fromJson(post)));
-    } else {
+      if (response.statusCode == 200) {
+        Iterable data = json.decode(response.body)['posts'];
+        return List<Post>.from(data.map((post) => Post.fromJson(post)));
+      } else {
+        throw Exception('Failed to load user posts: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error loading user posts: $error');
       throw Exception('Failed to load user posts');
     }
   }
@@ -118,14 +147,10 @@ class ApiService {
       }),
     );
 
-    if (response.statusCode == 201) {
-      return true;
-    } else {
-      return false;
-    }
+    return response.statusCode == 201;
   }
 
-  static Future<bool> login(String email, String password) async {
+  static Future<String?> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/login'),
       headers: {'Content-Type': 'application/json'},
@@ -133,9 +158,10 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return true;
+      Map<String, dynamic> responseData = json.decode(response.body);
+      return responseData['token'];
     } else {
-      return false;
+      return null;
     }
   }
 
@@ -146,17 +172,13 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
       );
 
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        return false;
-      }
+      return response.statusCode == 200;
     } catch (error) {
       print('Error logging out: $error');
       return false;
     }
   }
-  
+
   static Future<bool> addUser(User newUser) async {
     final response = await http.post(
       Uri.parse('$baseUrl/admin/users'),
@@ -164,10 +186,6 @@ class ApiService {
       body: jsonEncode(newUser.toJson()),
     );
 
-    if (response.statusCode == 201) {
-      return true;
-    } else {
-      return false;
-    }
+    return response.statusCode == 201;
   }
 }

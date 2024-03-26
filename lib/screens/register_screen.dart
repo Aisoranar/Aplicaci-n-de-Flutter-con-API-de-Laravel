@@ -43,12 +43,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_formKey.currentState!.validate()) {
       final newUser = User(
         id: 0,
-        firstName: _firstNameController.text,
-        lastName: _lastNameController.text,
+        firstName: _firstNameController.text, // Asegúrate de que firstName no sea nulo
+        lastName: _lastNameController.text, // Asegúrate de que lastName no sea nulo
         birthdate: _selectedDate.toIso8601String(),
-        username: _usernameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
+        username: _usernameController.text, // Asegúrate de que username no sea nulo
+        email: _emailController.text, // Asegúrate de que email no sea nulo
+        password: _passwordController.text, // Asegúrate de que password no sea nulo
       );
 
       ApiService.register(

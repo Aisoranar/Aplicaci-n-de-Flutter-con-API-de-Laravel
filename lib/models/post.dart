@@ -13,4 +13,6 @@ class Post {
       content: json['content'],
     );
   }
+
+  get author => null;
 }

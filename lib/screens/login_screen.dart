@@ -1,6 +1,6 @@
-import 'package:api_flutter_laravel/tab_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:api_flutter_laravel/api/api_service.dart';
+import 'package:api_flutter_laravel/token_storage.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -12,19 +12,26 @@ class LoginScreen extends StatelessWidget {
       String email = emailController.text;
       String password = passwordController.text;
       
-      bool loggedIn = await ApiService.login(email, password);
+      String? token = await ApiService.login(email, password);
       
-      if (loggedIn) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => TabNavigator()), // Navega al TabNavigator
-        );
+      if (token != null) {
+        await TokenStorage().saveToken(token);
+        
+        // Llama a _checkToken después de guardar el token
+        _checkToken(token); // Pasar el token como argumento
+        
+        Navigator.pushReplacementNamed(context, '/TabNavigator');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Login failed. Please try again.')),
         );
       }
     }
+  }
+
+  // Función para verificar el token
+  void _checkToken(String token) async {
+    print('Token almacenado después del inicio de sesión: $token');
   }
 
   @override
@@ -45,7 +52,6 @@ class LoginScreen extends StatelessWidget {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
-                  // Additional email validation can be added here
                   return null;
                 },
               ),
@@ -57,7 +63,6 @@ class LoginScreen extends StatelessWidget {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
                   }
-                  // Additional password validation can be added here
                   return null;
                 },
               ),
